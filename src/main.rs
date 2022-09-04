@@ -1,7 +1,15 @@
 use std::io;
 use std::io::prelude::*;
 use std::io::Cursor;
+
 use prost::Message;
+
+use swc_ecma_ast::*;
+use swc_ecma_codegen::{text_writer::JsWriter, Emitter};
+use swc_common::{
+    sync::Lrc,
+    SourceMap,
+};
 
 pub mod plugin {
     include!(concat!(env!("OUT_DIR"), "/plugin.rs"));
@@ -20,9 +28,73 @@ pub fn serialize_codegen_response(resp: &plugin::CodeGenResponse) -> Vec<u8> {
 }
 
 pub fn create_codegen_response() -> plugin::CodeGenResponse {
+    let cm = Lrc::new(SourceMap::default());
+	let mut buf = vec![];
+	{
+		let mut emitter = Emitter {
+			cfg: swc_ecma_codegen::Config {
+				..Default::default()
+			},
+			cm: cm.clone(),
+			comments: None,
+			wr: JsWriter::new(cm.clone(), "\n", &mut buf, None),
+		};
+
+        let fields = vec![
+            TsTypeElement::TsPropertySignature(TsPropertySignature {
+ 				span: Default::default(),
+                readonly: false,
+                computed: false,
+                optional: true,
+                init: None,
+                params: vec![],
+                key: Box::new(Expr::Ident(Ident { 
+ 					span: Default::default(),
+                    sym: "bar".into(),
+                    optional: false,
+                })),
+                type_ann: Some(
+                    TsTypeAnn {
+ 					    span: Default::default(),
+ 					    kind: TsStringKeyword,
+                    },
+                ),
+                type_params: None,
+            }),
+        ];
+
+		emitter
+			.emit_module(&Module {
+				body: vec![
+                    ModuleItem::Stmt(
+                        Stmt::Decl(
+                            Decl::TsInterface(TsInterfaceDecl {
+ 						        span: Default::default(),
+                                id: Ident { 
+ 						            span: Default::default(),
+                                    sym: "Foo".into(), // HOW!?!?
+                                    optional: false,
+                                },
+ 						        type_params: None,
+                                declare: false,
+                                extends: vec![],
+ 						        body: TsInterfaceBody {
+ 						            span: Default::default(),
+                                    body: fields,
+                                },
+                            }),
+                        ),
+                    ),
+                ],
+				span: Default::default(),
+				shebang: None,
+			})
+			.unwrap();
+	}
+
     let mut file = plugin::File::default();
-    file.name = "hello.txt".to_string();
-    file.contents = "Hello World".as_bytes().to_vec();
+    file.name = "hello.ts".to_string();
+    file.contents = buf;
 
     let mut resp = plugin::CodeGenResponse::default();
     resp.files.push(file);

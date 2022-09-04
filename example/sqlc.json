@@ -1,0 +1,25 @@
+{
+  "version": "2",
+  "plugins": [
+    {
+      "name": "typescript",
+      "wasm": {
+        "url": "file:///Users/kyle/projects/sqlc-gen-node-pg/target/wasm32-wasi/release/sqlc-gen-node-pg.wasm",
+        "sha256": "a216d38e306bcad764523527d12be77247bccf6b61c8a6eac18de33c3f7aea38"
+      }
+    }
+  ],
+  "sql": [
+    {
+      "schema": "query.sql",
+      "queries": "query.sql",
+      "engine": "postgresql",
+      "codegen": [
+        {
+          "out": "src",
+          "plugin": "typescript"
+        }
+      ]
+    }
+  ]
+}
