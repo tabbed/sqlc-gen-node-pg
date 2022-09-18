@@ -5,6 +5,7 @@ use std::io::Cursor;
 use prost::Message;
 
 use swc_ecma_ast::*;
+use swc_ecma_ast::TsKeywordTypeKind::*;
 use swc_ecma_codegen::{text_writer::JsWriter, Emitter};
 use swc_common::{
     sync::Lrc,
@@ -56,7 +57,10 @@ pub fn create_codegen_response() -> plugin::CodeGenResponse {
                 type_ann: Some(
                     TsTypeAnn {
  					    span: Default::default(),
- 					    kind: TsStringKeyword,
+                        type_ann: Box::new(TsType::TsKeywordType(TsKeywordType {
+ 					        span: Default::default(),
+ 					        kind: TsStringKeyword,
+                        })),
                     },
                 ),
                 type_params: None,

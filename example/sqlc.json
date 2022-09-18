@@ -5,7 +5,7 @@
       "name": "typescript",
       "wasm": {
         "url": "file:///Users/kyle/projects/sqlc-gen-node-pg/target/wasm32-wasi/release/sqlc-gen-node-pg.wasm",
-        "sha256": "a216d38e306bcad764523527d12be77247bccf6b61c8a6eac18de33c3f7aea38"
+        "sha256": "4762fc11c845ea57a0dda3675a58c8c74ed979a102c5c5a4cc2c505208060cf6"
       }
     }
   ],
